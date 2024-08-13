@@ -1,0 +1,21 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+parameters:
+  - name: repoUrl
+    type: string
+    default: ''
+
+steps:
+- script: echo "Cloning repository from $(repoUrl)"
+  displayName: 'Display Repo URL'
+
+- script: |
+    git clone $(repoUrl) repo
+    cd repo
+    echo "Add other tasks to build, test, and deploy your project."
+    # Here you can add other git commands or any build/test/deploy scripts
+  displayName: 'Clone repository and execute tasks'
