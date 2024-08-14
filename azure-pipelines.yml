@@ -18,7 +18,7 @@ steps:
   displayName: 'Display Repo URL'
 
 - script: |
-    git clone $({{parameters.repoUrl}}) repo
+    git clone ${{parameters.repoUrl}} repo
     cd repo
     echo "Add other tasks to build, test, and deploy your project."
     # Here you can add other git commands or any build/test/deploy scripts
