@@ -13,11 +13,11 @@ parameters:
     default: ''
 
 steps:
-- script: echo "Cloning repository from $(repoUrl)"
+- script: echo "Cloning repository from $({{parameters.repoUrl}})"
   displayName: 'Display Repo URL'
 
 - script: |
-    git clone $(repoUrl) repo
+    git clone $({{parameters.repoUrl}}) repo
     cd repo
     echo "Add other tasks to build, test, and deploy your project."
     # Here you can add other git commands or any build/test/deploy scripts
