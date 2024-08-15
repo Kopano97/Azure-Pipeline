@@ -4,22 +4,30 @@ parameters:
     default: ''
 
 trigger:
-- main
+  branches:
+    include:
+      - main
 
 pr:
-- main
+  branches:
+    include:
+      - main
 
 pool:
   vmImage: ubuntu-latest
 
-
-steps:
-- script: echo "Cloning repository from ${{parameters.repoUrl}}"
-  displayName: 'Display Repo URL'
-
-- script: |
-    git clone ${{parameters.repoUrl}} repo
-    cd repo
-    echo "Add other tasks to build, test, and deploy your project."
-    # Here you can add other git commands or any build/test/deploy scripts
-  displayName: 'Clone repository and execute tasks'
+stages:
+  - stage: CloneAndBuild
+    displayName: 'Clone Repository and Execute Tasks'
+    jobs:
+      - job: CloneAndExecute
+        steps:
+          - script: echo "Cloning repository from ${{ parameters.repoUrl }}"
+            displayName: 'Display Repo URL'
+          
+          - script: |
+              git clone ${{ parameters.repoUrl }} repo
+              cd repo
+              echo "Add other tasks to build, test, and deploy your project."
+              # Here you can add other git commands or any build/test/deploy scripts
+            displayName: 'Clone repository and execute tasks'
