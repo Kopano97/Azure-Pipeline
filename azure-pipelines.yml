@@ -42,3 +42,17 @@ stages:
 
           - script: echo "This is the second echo statement in the new stage."
             displayName: 'Echo Script 2'
+
+  - stage: BuildDocker
+    displayName: 'Build and push Docker image'
+    jobs:
+    - job: Build
+      displayName: Build
+      pool:
+        vmImage: ubuntu-latest
+      steps:
+      - task: Docker@2
+        inputs:
+          command: 'buildAndPush'
+          Dockerfile: '**/Dockerfile'
+          buildContext: '${{ parameters.repoUrl }}'          
