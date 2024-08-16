@@ -27,11 +27,12 @@ stages:
               sudo apt-get update
               sudo apt-get install openjdk-17-jdk -y
               echo "Setting JAVA_HOME environment variable"
-              echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $HOME/.bashrc
-              source $HOME/.bashrc
+              export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+              echo "Adding JAVA_HOME to PATH"
+              export PATH=$JAVA_HOME/bin:$PATH
               echo "Java version:"
               java -version
-            displayName: 'Install JDK 17'
+            displayName: 'Install and Set Up JDK 17'
 
   - stage: CloneAndBuild
     displayName: 'Clone Repository and Build Spring Boot Application'
@@ -76,13 +77,12 @@ stages:
             displayName: 'Echo Success'
 
   - stage: DockerRun
-    displayName: 'Install Docker and Run Container'
+    displayName: 'Run Docker Container'
     dependsOn: DockerBuildAndPush
     jobs:
       - job: DockerJob
         steps:
           - script: |
               echo "Running Docker Container"
-              docker login --username kopanomgn --password KopanoMagano@97
               docker run -d -p 3000:3000 kopanomgn/azuretest
             displayName: 'Running Docker Container'
