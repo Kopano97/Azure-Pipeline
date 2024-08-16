@@ -39,17 +39,19 @@ stages:
         steps:
           - script: |
               echo "Logging in to Docker Hub"
-              docker login --username your-username --password your-password
+              docker login --username kopanomgn --password KopanoMagano@97
             displayName: 'Docker Login'
           
           - script: |
               echo "Building Docker image"
-              docker build -t your-dockerhub-username/your-image-name:latest .
+              git clone ${{ parameters.repoUrl }} repo2
+              cd repo2
+              docker build -t kopanomgn/safe_speed:latest .
             displayName: 'Build Docker Image'
 
           - script: |
               echo "Pushing Docker image to Docker Hub"
-              docker push your-dockerhub-username/your-image-name:latest
+              docker push kopanomgn/safe_speed:latest
             displayName: 'Push Docker Image to Docker Hub'
 
           - script: |
