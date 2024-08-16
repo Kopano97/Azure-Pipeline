@@ -1,7 +1,7 @@
 parameters:
   - name: repoUrl
     type: string
-    default: 'https://github.com/suprise079/SafeSpeedFront_End.git' # Update this with the actual repository URL
+    default: 'https://gitlab.com/nanuchi/docker-in-1-hour.git'
 
 trigger:
   branches:
@@ -18,7 +18,7 @@ pool:
 
 stages:
   - stage: CloneAndBuild
-    displayName: 'Clone Repository and Build React Application'
+    displayName: 'Clone Repository and Build Spring Boot Application'
     jobs:
       - job: CloneAndBuildJob
         steps:
@@ -26,11 +26,11 @@ stages:
               echo "Cloning repository from ${{ parameters.repoUrl }}"
               git clone ${{ parameters.repoUrl }} repo
               cd repo
-              echo "Installing dependencies"
-              npm install
-              echo "Building React application"
-              npm run build
-            displayName: 'Clone repository and build React application'
+              echo "Setting execute permission for Maven Wrapper"
+              chmod +x mvnw
+              echo "Building Spring Boot application"
+              ./mvnw clean package
+            displayName: 'Clone repository and build Spring Boot application'
 
   - stage: DockerBuildAndPush
     displayName: 'Build and Push Docker Image'
@@ -46,12 +46,12 @@ stages:
               echo "Building Docker image"
               git clone ${{ parameters.repoUrl }} repo2
               cd repo2
-              docker build -t kopanomgn/safe_speed:latest .
+              docker build -t kopanomgn/azuretest:latest .
             displayName: 'Build Docker Image'
 
           - script: |
               echo "Pushing Docker image to Docker Hub"
-              docker push kopanomgn/safe_speed:latest
+              docker push kopanomgn/azuretest:latest
             displayName: 'Push Docker Image to Docker Hub'
 
           - script: |
@@ -66,5 +66,5 @@ stages:
           - script: |
               echo "Running Docker Container"
               docker login --username kopanomgn --password KopanoMagano@97
-              docker run -d -p 3000:3000 kopanomgn/safe_speed:latest
+              docker run -d -p 3000:3000 kopanomgn/azuretest
             displayName: 'Running Docker Container'
