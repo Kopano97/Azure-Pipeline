@@ -48,8 +48,9 @@ stages:
               cd repo
               echo "Setting execute permission for Maven Wrapper"
               chmod +x mvnw
-              echo "Building Spring Boot application"
+              echo "Setting JAVA_HOME environment variable for this shell session"
               export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+              echo "Building Spring Boot application"
               ./mvnw clean package
             displayName: 'Clone repository and build Spring Boot application'
 
