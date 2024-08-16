@@ -1,7 +1,7 @@
 parameters:
   - name: repoUrl
     type: string
-    default: 'https://gitlab.com/nanuchi/docker-in-1-hour.git'
+    default: 'https://github.com/QoT-Solutions/safeSpeed_BackEnd.git'
 
 trigger:
   branches:
@@ -78,7 +78,7 @@ stages:
           - script: |
               echo "Running in Docker"
               docker login --username kopanomgn --password KopanoMagano@97
-              docker run -d -p 3000:3000 kopanomgn/azuretest
+              docker run -d -p 3000:3000 kopanomgn/azuretest mvn test
             displayName: 'Running Docker Container'
         # steps:
         # - task: DockerInstaller@0
