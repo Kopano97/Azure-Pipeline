@@ -1,7 +1,7 @@
 parameters:
   - name: repoUrl
     type: string
-    default: 'https://gitlab.com/nanuchi/docker-in-1-hour.git'
+    default: 'https://github.com/suprise079/SafeSpeedFront_End.git' # Update this with the actual repository URL
 
 trigger:
   branches:
@@ -18,7 +18,7 @@ pool:
 
 stages:
   - stage: CloneAndBuild
-    displayName: 'Clone Repository and Build Spring Boot Application'
+    displayName: 'Clone Repository and Build React Application'
     jobs:
       - job: CloneAndBuildJob
         steps:
@@ -26,11 +26,11 @@ stages:
               echo "Cloning repository from ${{ parameters.repoUrl }}"
               git clone ${{ parameters.repoUrl }} repo
               cd repo
-              echo "Setting execute permission for Maven Wrapper"
-              chmod +x mvnw
-              echo "Building Spring Boot application"
-              ./mvnw clean package
-            displayName: 'Clone repository and build Spring Boot application'
+              echo "Installing dependencies"
+              npm install
+              echo "Building React application"
+              npm run build
+            displayName: 'Clone repository and build React application'
 
   - stage: DockerBuildAndPush
     displayName: 'Build and Push Docker Image'
@@ -39,19 +39,17 @@ stages:
         steps:
           - script: |
               echo "Logging in to Docker Hub"
-              docker login --username kopanomgn --password KopanoMagano@97
+              docker login --username your-username --password your-password
             displayName: 'Docker Login'
           
           - script: |
               echo "Building Docker image"
-              git clone ${{ parameters.repoUrl }} repo2
-              cd repo2
-              docker build -t kopanomgn/azuretest:latest .
+              docker build -t your-dockerhub-username/your-image-name:latest .
             displayName: 'Build Docker Image'
 
           - script: |
               echo "Pushing Docker image to Docker Hub"
-              docker push kopanomgn/azuretest:latest
+              docker push your-dockerhub-username/your-image-name:latest
             displayName: 'Push Docker Image to Docker Hub'
 
           - script: |
@@ -65,6 +63,6 @@ stages:
         steps:
           - script: |
               echo "Running Docker Container"
-              docker login --username kopanomgn --password KopanoMagano@97
-              docker run -d -p 3000:3000 kopanomgn/azuretest
+              docker login --username your-username --password your-password
+              docker run -d -p 3000:3000 your-dockerhub-username/your-image-name:latest
             displayName: 'Running Docker Container'
