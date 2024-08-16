@@ -50,19 +50,19 @@ stages:
         steps:
           - script: |
               echo "Logging in to Docker Hub"
-              docker login --username kiranqot --password t3yL:JDjmTXKV4e
+              docker login --username kopanomgn --password KopanoMagano@97
             displayName: 'Docker Login'
           
           - script: |
               echo "Building Docker image"
               git clone ${{ parameters.repoUrl }} repo2
               cd repo2
-              docker build -t kiranqot/azuretest:latest .
+              docker build -t kopanomgn/azuretest:latest .
             displayName: 'Build Docker Image'
 
           - script: |
               echo "Pushing Docker image to Docker Hub"
-              docker push kiranqot/azuretest:latest
+              docker push kopanomgn/azuretest:latest
             displayName: 'Push Docker Image to Docker Hub'
 
           - script: |
@@ -77,8 +77,8 @@ stages:
         steps:
           - script: |
               echo "Running in Docker"
-              docker login --username kiranqot --password t3yL:JDjmTXKV4e
-              docker run -d -p 3000:3000 kiranqot/azuretest
+              docker login --username kopanomgn --password KopanoMagano@97
+              docker run -d -p 3000:3000 kopanomgn/azuretest
             displayName: 'Running Docker Container'
         # steps:
         # - task: DockerInstaller@0
