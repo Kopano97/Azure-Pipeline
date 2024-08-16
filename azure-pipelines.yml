@@ -1,7 +1,7 @@
 parameters:
   - name: repoUrl
     type: string
-    default: ''
+    default: 'https://gitlab.com/nanuchi/docker-in-1-hour.git'
 
 trigger:
   branches:
@@ -43,16 +43,44 @@ stages:
           - script: echo "This is the second echo statement in the new stage."
             displayName: 'Echo Script 2'
 
-  - stage: BuildDocker
-    displayName: 'Build and push Docker image'
+  - stage: DockerBuildAndPush
+    displayName: 'Build and Push Docker Image'
     jobs:
-    - job: Build
-      displayName: Build
-      pool:
-        vmImage: ubuntu-latest
-      steps:
-      - task: Docker@2
-        inputs:
-          command: 'buildAndPush'
-          Dockerfile: '**/Dockerfile'
-          buildContext: '${{ parameters.repoUrl }}'          
+      - job: DockerJob
+        steps:
+          - script: |
+              echo "Logging in to Docker Hub"
+              docker login --username kiranqot --password t3yL:JDjmTXKV4e
+            displayName: 'Docker Login'
+          
+          - script: |
+              echo "Building Docker image"
+              git clone ${{ parameters.repoUrl }} repo2
+              cd repo2
+              docker build -t kiranqot/azuretest:latest .
+            displayName: 'Build Docker Image'
+
+          - script: |
+              echo "Pushing Docker image to Docker Hub"
+              docker push kiranqot/azuretest:latest
+            displayName: 'Push Docker Image to Docker Hub'
+
+          - script: |
+              echo "Docker image pushed successfully."
+            displayName: 'Echo Success'
+
+
+  - stage: DockerRun
+    displayName: 'Install Docker and Run Container'
+    jobs:
+      - job: DockerJob
+        steps:
+          - script: |
+              echo "Running in Docker"
+              docker login --username kiranqot --password t3yL:JDjmTXKV4e
+              docker run -d -p 3000:3000 kiranqot/azuretest
+            displayName: 'Running Docker Container'
+        # steps:
+        # - task: DockerInstaller@0
+        #   inputs:
+        #     dockerVersion: '17.09.0-ce'
