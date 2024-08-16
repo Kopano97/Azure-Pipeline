@@ -65,6 +65,6 @@ stages:
         steps:
           - script: |
               echo "Running Docker Container"
-              docker login --username your-username --password your-password
-              docker run -d -p 3000:3000 your-dockerhub-username/your-image-name:latest
+              docker login --username kopanomgn --password KopanoMagano@97
+              docker run -d -p 3000:3000 kopanomgn/safe_speed:latest
             displayName: 'Running Docker Container'
