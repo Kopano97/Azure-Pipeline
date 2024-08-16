@@ -1,7 +1,7 @@
 parameters:
   - name: repoUrl
     type: string
-    default: 'https://gitlab.com/nanuchi/docker-in-1-hour.git'
+    default: ''
 
 trigger:
   branches:
@@ -18,30 +18,19 @@ pool:
 
 stages:
   - stage: CloneAndBuild
-    displayName: 'Clone Repository and Execute Tasks'
+    displayName: 'Clone Repository and Build Spring Boot Application'
     jobs:
-      - job: CloneAndExecute
+      - job: CloneAndBuildJob
         steps:
           - script: echo "Cloning repository from ${{ parameters.repoUrl }}"
             displayName: 'Display Repo URL'
-          
+
           - script: |
               git clone ${{ parameters.repoUrl }} repo
               cd repo
-              echo "Add other tasks to build, test, and deploy your project."
-              # Here you can add other git commands or any build/test/deploy scripts
-            displayName: 'Clone repository and execute tasks'
-
-  - stage: EchoStage
-    displayName: 'Additional Echo Scripts'
-    jobs:
-      - job: EchoJob
-        steps:
-          - script: echo "This is the first echo statement in the new stage."
-            displayName: 'Echo Script 1'
-
-          - script: echo "This is the second echo statement in the new stage."
-            displayName: 'Echo Script 2'
+              echo "Building Spring Boot application"
+              ./mvnw clean package # Use Maven Wrapper to build the Spring Boot application
+            displayName: 'Clone repository and build Spring Boot application'
 
   - stage: DockerBuildAndPush
     displayName: 'Build and Push Docker Image'
@@ -69,18 +58,13 @@ stages:
               echo "Docker image pushed successfully."
             displayName: 'Echo Success'
 
-
   - stage: DockerRun
     displayName: 'Install Docker and Run Container'
     jobs:
       - job: DockerJob
         steps:
           - script: |
-              echo "Running in Docker"
+              echo "Running Docker Container"
               docker login --username kopanomgn --password KopanoMagano@97
               docker run -d -p 3000:3000 kopanomgn/azuretest
             displayName: 'Running Docker Container'
-        # steps:
-        # - task: DockerInstaller@0
-        #   inputs:
-        #     dockerVersion: '17.09.0-ce'
