@@ -1,7 +1,7 @@
 parameters:
   - name: repoUrl
     type: string
-    default: ''
+    default: 'https://gitlab.com/nanuchi/docker-in-1-hour.git'
 
 trigger:
   branches:
@@ -22,14 +22,14 @@ stages:
     jobs:
       - job: CloneAndBuildJob
         steps:
-          - script: echo "Cloning repository from ${{ parameters.repoUrl }}"
-            displayName: 'Display Repo URL'
-
           - script: |
+              echo "Cloning repository from ${{ parameters.repoUrl }}"
               git clone ${{ parameters.repoUrl }} repo
               cd repo
+              echo "Setting execute permission for Maven Wrapper"
+              chmod +x mvnw
               echo "Building Spring Boot application"
-              ./mvnw clean package # Use Maven Wrapper to build the Spring Boot application
+              ./mvnw clean package
             displayName: 'Clone repository and build Spring Boot application'
 
   - stage: DockerBuildAndPush
