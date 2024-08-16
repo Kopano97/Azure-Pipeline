@@ -27,9 +27,11 @@ stages:
               sudo apt-get update
               sudo apt-get install openjdk-17-jdk -y
               echo "Setting JAVA_HOME environment variable"
-              export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+              echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" | sudo tee -a /etc/environment
+              source /etc/environment
               echo "Adding JAVA_HOME to PATH"
-              export PATH=$JAVA_HOME/bin:$PATH
+              echo "PATH=$JAVA_HOME/bin:$PATH" | sudo tee -a /etc/environment
+              source /etc/environment
               echo "Java version:"
               java -version
             displayName: 'Install and Set Up JDK 17'
@@ -47,6 +49,7 @@ stages:
               echo "Setting execute permission for Maven Wrapper"
               chmod +x mvnw
               echo "Building Spring Boot application"
+              export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
               ./mvnw clean package
             displayName: 'Clone repository and build Spring Boot application'
 
@@ -58,7 +61,7 @@ stages:
         steps:
           - script: |
               echo "Logging in to Docker Hub"
-              docker login --username kopanomgn --password KopanoMagano@97
+              echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
             displayName: 'Docker Login'
           
           - script: |
