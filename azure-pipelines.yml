@@ -1,7 +1,7 @@
 parameters:
   - name: repoUrl
     type: string
-    default: 'https://gitlab.com/nanuchi/docker-in-1-hour.git'
+    default: 'https://github.com/QoT-Solutions/safeSpeed_BackEnd.git'
 
 trigger:
   branches:
