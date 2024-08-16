@@ -17,8 +17,25 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
+  - stage: SetupJava
+    displayName: 'Set Up Java 17'
+    jobs:
+      - job: SetJava17
+        steps:
+          - script: |
+              echo "Installing JDK 17"
+              sudo apt-get update
+              sudo apt-get install openjdk-17-jdk -y
+              echo "Setting JAVA_HOME environment variable"
+              echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $HOME/.bashrc
+              source $HOME/.bashrc
+              echo "Java version:"
+              java -version
+            displayName: 'Install JDK 17'
+
   - stage: CloneAndBuild
     displayName: 'Clone Repository and Build Spring Boot Application'
+    dependsOn: SetupJava
     jobs:
       - job: CloneAndBuildJob
         steps:
@@ -34,6 +51,7 @@ stages:
 
   - stage: DockerBuildAndPush
     displayName: 'Build and Push Docker Image'
+    dependsOn: CloneAndBuild
     jobs:
       - job: DockerJob
         steps:
@@ -44,8 +62,7 @@ stages:
           
           - script: |
               echo "Building Docker image"
-              git clone ${{ parameters.repoUrl }} repo2
-              cd repo2
+              cd repo
               docker build -t kopanomgn/azuretest:latest .
             displayName: 'Build Docker Image'
 
@@ -60,6 +77,7 @@ stages:
 
   - stage: DockerRun
     displayName: 'Install Docker and Run Container'
+    dependsOn: DockerBuildAndPush
     jobs:
       - job: DockerJob
         steps:
