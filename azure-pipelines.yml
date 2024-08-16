@@ -1,7 +1,7 @@
 parameters:
   - name: repoUrl
     type: string
-    default: 'https://github.com/QoT-Solutions/safeSpeed_BackEnd.git'
+    default: 'https://gitlab.com/nanuchi/docker-in-1-hour.git'
 
 trigger:
   branches:
@@ -17,55 +17,46 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-  - stage: SetupJava
-    displayName: 'Set Up Java 17'
-    jobs:
-      - job: SetJava17
-        steps:
-          - script: |
-              echo "Installing JDK 17"
-              sudo apt-get update
-              sudo apt-get install openjdk-17-jdk -y
-              echo "Setting JAVA_HOME environment variable"
-              echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" | sudo tee -a /etc/environment
-              echo "Adding JAVA_HOME to PATH"
-              echo "PATH=$JAVA_HOME/bin:$PATH" | sudo tee -a /etc/environment
-              source /etc/environment
-              echo "Java version:"
-              java -version
-            displayName: 'Install and Set Up JDK 17'
-
   - stage: CloneAndBuild
-    displayName: 'Clone Repository and Build Spring Boot Application'
-    dependsOn: SetupJava
+    displayName: 'Clone Repository and Execute Tasks'
     jobs:
-      - job: CloneAndBuildJob
+      - job: CloneAndExecute
         steps:
+          - script: echo "Cloning repository from ${{ parameters.repoUrl }}"
+            displayName: 'Display Repo URL'
+          
           - script: |
-              echo "Cloning repository from ${{ parameters.repoUrl }}"
               git clone ${{ parameters.repoUrl }} repo
               cd repo
-              echo "Setting execute permission for Maven Wrapper"
-              chmod +x mvnw
-              echo "Building Spring Boot application"
-              export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-              ./mvnw clean package
-            displayName: 'Clone repository and build Spring Boot application'
+              echo "Add other tasks to build, test, and deploy your project."
+              # Here you can add other git commands or any build/test/deploy scripts
+            displayName: 'Clone repository and execute tasks'
+
+  - stage: EchoStage
+    displayName: 'Additional Echo Scripts'
+    jobs:
+      - job: EchoJob
+        steps:
+          - script: echo "This is the first echo statement in the new stage."
+            displayName: 'Echo Script 1'
+
+          - script: echo "This is the second echo statement in the new stage."
+            displayName: 'Echo Script 2'
 
   - stage: DockerBuildAndPush
     displayName: 'Build and Push Docker Image'
-    dependsOn: CloneAndBuild
     jobs:
       - job: DockerJob
         steps:
           - script: |
               echo "Logging in to Docker Hub"
-              echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+              docker login --username kopanomgn --password KopanoMagano@97
             displayName: 'Docker Login'
           
           - script: |
               echo "Building Docker image"
-              cd repo
+              git clone ${{ parameters.repoUrl }} repo2
+              cd repo2
               docker build -t kopanomgn/azuretest:latest .
             displayName: 'Build Docker Image'
 
@@ -78,13 +69,18 @@ stages:
               echo "Docker image pushed successfully."
             displayName: 'Echo Success'
 
+
   - stage: DockerRun
-    displayName: 'Run Docker Container'
-    dependsOn: DockerBuildAndPush
+    displayName: 'Install Docker and Run Container'
     jobs:
       - job: DockerJob
         steps:
           - script: |
-              echo "Running Docker Container"
+              echo "Running in Docker"
+              docker login --username kopanomgn --password KopanoMagano@97
               docker run -d -p 3000:3000 kopanomgn/azuretest
             displayName: 'Running Docker Container'
+        # steps:
+        # - task: DockerInstaller@0
+        #   inputs:
+        #     dockerVersion: '17.09.0-ce'
